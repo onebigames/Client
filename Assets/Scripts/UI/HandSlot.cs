@@ -4,16 +4,11 @@ using UnityEngine.EventSystems;
 
 public class HandSlot : UIElement {
 
-    private int id = -1;
-    public int ID
-    {
-        private get => id;
-        set { id = id == -1 ? value : id; }
-    }
+    [SerializeField] private int id = -1;
+    [SerializeField] private RenderCamera renderCamera = null;
 
     private Image itemIcon = null;
     private Image enabledIcon = null;
-    [SerializeField] private RenderCamera renderCamera = null;
 
     private Container container = null;
     private CharacterInventory inventory = null;
@@ -35,10 +30,10 @@ public class HandSlot : UIElement {
             inventory = FindObjectOfType<CharacterInventory>();
             if (inventory)
             {
-                container = inventory.GetHandByID(id);
+                container = inventory.GetSlotById(id);
                 container.OnContained = OnAddedToHand + container.OnContained;
             }
-            container = inventory ? inventory.GetHandByID(id) : null;
+            container = inventory ? inventory.GetSlotById(id) : null;
             return;
         }
         RedrawItem();

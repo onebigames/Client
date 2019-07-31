@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Brisk.Actions;
 using Brisk.Entities;
+using Brisk.Serialization;
 using UnityEngine;
 
 namespace Structures.Doors
@@ -36,6 +37,21 @@ namespace Structures.Doors
 
         public bool Stuck => welded || bolted || disabled || !electrical.Powered;
 
+        [SyncReliable]
+        public bool Open
+        {
+            get => open;
+            set
+            {
+                if (open == value) return;
+                open = value;
+
+                if (audioSource != null) audioSource.PlayOneShot(open ? openSound : closeSound);
+
+                StartCoroutine(Move());
+            }
+        }
+
         
         private void Awake()
         {
@@ -58,7 +74,6 @@ namespace Structures.Doors
         private IEnumerator Move() // TODO make a more performant, declarative manager or these simple animations
         {
             moving = true;
-            open = !open;
             
             var origin = open ? 0f : 1f;
             var target = open ? 1f : 0f;
@@ -83,42 +98,21 @@ namespace Structures.Doors
             return !moving && !Stuck;
         }
         
-        [GlobalAction(false)]
-        public void Interact()
-        {
-            StartCoroutine(Move());
-
-            if (audioSource != null) audioSource.PlayOneShot(open ? openSound : closeSound);
-        }
-        
         public void Interact(GameObject source)
         {
             if (!IsInteractable(source)) {
                 return;
             }
 
-            this.Net_Interact();
-            
-            //StartCoroutine(Move());
-            
-            audioSource.PlayOneShot(open ? openSound : closeSound);
+            Open = !Open;
         }
 
 #if UNITY_EDITOR
         [ContextMenu("Toggle")]
         private void Toggle()
         {
-            if (moving)
-            {
-                return;
-            }
-
-            moving = true;
-            open = !open;
-
-            StartCoroutine(Move());
-            
-            audioSource.PlayOneShot(open ? openSound : closeSound);
+            if (moving) return;
+            Open = !Open;
         }
 #endif
     }

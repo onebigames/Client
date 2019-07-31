@@ -1,9 +1,12 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using Brisk.Entities;
+using Brisk.Serialization;
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody))]
-public class Containable : MonoBehaviour, IInteractable {
+[DisallowMultipleComponent]
+public class Containable : NetBehaviour, IInteractable {
     public Sprite generatedIcon = null;
 
     [SerializeField] private ContainableSize size = ContainableSize.Normal;
@@ -15,16 +18,31 @@ public class Containable : MonoBehaviour, IInteractable {
     public Vector3 PickPosition => pickPosition;
     public Vector3 PickRotation => pickPosition;
 
+    public ContainableSize Size => size;
+
     private Container container;
 
+    [SyncReliable] public NetEntity ContainerEntity { get; set; }
+    
+    [SyncReliable]
     public Container Container {
         get => container;
         set {
             if (value != null && container != null) {
-                Debug.LogError("Tried to contain an already contained object");
+                Debug.LogWarning("Tried to contain an already contained object");
                 return;
             }
+
+            if (container == value) return;
+
+            if (value != null && !value.CanContain(this)) return;
+            
+            var oldContainer = container;
             container = value;
+            ContainerEntity = container != null ? container.Entity : null;
+            
+            if (oldContainer) oldContainer.Remove(this);
+            if (container) container.Contain(this);
         }
     }
 
@@ -39,17 +57,8 @@ public class Containable : MonoBehaviour, IInteractable {
     }
 
     public void Interact(GameObject source) {
-        if (!IsInteractable(source)) {
-            return;
-        }
+        if (!IsInteractable(source)) return;
         var inventory = source.GetComponent<CharacterInventory>();
-
-        container?.Remove(this);
-
-        inventory.GetActiveHand().Contain(this);
-    }
-
-    public ContainableSize GetWeight() {
-        return size;
+        if (inventory != null) Container = inventory.GetActiveHand();
     }
 }

@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -18,9 +19,14 @@ namespace Structures.Containers
         private Coroutine currentCoroutine;
         
 
-        private void Awake()
+        private void OnEnable()
         {
             container.OnContained += OnPlacedInLocked;
+        }
+
+        private void OnDisable()
+        {
+            container.OnContained -= OnPlacedInLocked;
         }
 
         // TODO: Add logic for permissions
@@ -40,8 +46,7 @@ namespace Structures.Containers
             if (inHand && open)
             {
                 // Place item inside if we can
-                inHand.Container.Remove(inHand);
-                container.Contain(inHand);
+                inHand.Container = container;
             }
             else
             {

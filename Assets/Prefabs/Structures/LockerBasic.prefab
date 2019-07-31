@@ -191,6 +191,7 @@ GameObject:
   - component: {fileID: 54994945477406624}
   - component: {fileID: 114109367808883540}
   - component: {fileID: 8602098409528229159}
+  - component: {fileID: 1266748981014343243}
   m_Layer: 0
   m_Name: LockerBasic
   m_TagString: Untagged
@@ -248,10 +249,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 93c1f86f88cfbc146b90fc6c0a87e628, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  container:
-    numSlots: 8
-    maxSize: 2
-    restricted: 0
+  container: {fileID: 1266748981014343243}
   door: {fileID: 4789031794349784}
   dropPosition: {fileID: 4618565981625956}
   maxAngle: 100
@@ -310,6 +308,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2be99e11e4e445cfb113759827a1646e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &1266748981014343243
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1515820004777814}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b3865489f303bfa4aa3b4b7f676a9e1b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  numSlots: 512
+  maxSize: 4
+  restricted: 0
 --- !u!1 &1539467939100530
 GameObject:
   m_ObjectHideFlags: 0

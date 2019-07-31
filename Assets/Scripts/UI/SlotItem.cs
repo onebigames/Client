@@ -5,12 +5,8 @@ using UnityEngine.EventSystems;
 
 public class SlotItem : UIElement
 {
+    [SerializeField] private int id = -1;
     private Image itemIcon = null;
-    private int id = -1;
-    public int ID {
-        private get => id;
-        set { id = id == -1 ? value : id; }
-    }
 
     private CharacterInventory inventory = null;
     private Container container = null;
@@ -26,7 +22,7 @@ public class SlotItem : UIElement
         if (!inventory)
         {
             inventory = FindObjectOfType<CharacterInventory>();
-            container = inventory ? inventory.GetSlotByID(id) : null;
+            container = inventory ? inventory.GetSlotById(id) : null;
             return;
         }
     }
@@ -56,17 +52,15 @@ public class SlotItem : UIElement
     private void RemoveFromSlot()
     {
         Containable containable = container.GetContained()[0];
-        containable.Container.Remove(containable);
-        inventory.GetActiveHand().Contain(containable);
+        containable.Container = inventory.GetActiveHand();
         itemIcon.enabled = false;
     }
 
     private void AddToSlot()
     {
         Containable containable = inventory.GetInHand();
-        containable.Container.Remove(containable);
-        container.Contain(containable);
-        itemIcon.sprite = Sprite.Instantiate(containable.generatedIcon);
+        containable.Container = container;
+        itemIcon.sprite = Instantiate(containable.generatedIcon);
         itemIcon.transform.SetAsLastSibling();
         itemIcon.enabled = true;
     }
